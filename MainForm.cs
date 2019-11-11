@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace csFallingBlocks
@@ -19,6 +14,8 @@ namespace csFallingBlocks
 			InitializeComponent();
 
 			squareSize = 16;
+			timer1.Interval = (int)(1.0 / 60.0 * 1000);
+			timer1.Start();
 		}
 
 		private void MainForm_Paint(object sender, PaintEventArgs e)
@@ -65,6 +62,11 @@ namespace csFallingBlocks
 			{
 				this.Close();
 			}
+		}
+
+		private void timer1_Tick(object sender, EventArgs e)
+		{
+			this.Invalidate();
 		}
 	}
 }
