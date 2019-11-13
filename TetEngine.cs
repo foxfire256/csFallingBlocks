@@ -7,123 +7,456 @@
 // This can be modified to compile for a Pocket PC in MSVC8 by changing srand(time(NULL)) to 
 // srand(GetTickCount())
 
+using System;
+
 namespace csFallingBlocks
 {
 	class TetEngine
 	{
 		// private classes for current block (cb) and new block (newb)
 		BlockData cb, newb;
-		
+
 		// private square position, don't ever assume what is in here is what you
 		// want
 		SquarePos sp;
-		
+
+		public int width = 16;
+		public int height = 30;
+		public int nb_width = 5;
+		public int nb_height = 3;
+
 		// this is the array the has all the squares in it that are not moving
 		// two arrays were used so that collision detection would be easier to 
 		// implement
-		//int game_field[16][30];//(const)(X_MAX + 1)][(const)(Y_MAX + 1)];
-		
+		int[,] game_field;//[16][30];//(const)(X_MAX + 1)][(const)(Y_MAX + 1)];
+
 		// array for the current, moving block
-		//int current_block_field[16][30];//(const)(X_MAX + 1)][(const)(Y_MAX + 1)];
-		
-		
+		int[,] current_block_field;//[16][30];//(const)(X_MAX + 1)][(const)(Y_MAX + 1)];
+
+
 		// main array size
 		public int X_MAX, Y_MAX;
-		
+
 		// counter to determine when the next level is
 		public int next_level;
-		
+
 		// main game array, you need to draw this somehow to display the game
 		// draw a different colored square (7 totoal) for each array value
 		// [0][0] is top left, [X_MAX][Y_MAX] is bottom right
 		// if an element is 0, it should be left blank
-		//public int game_array[16][30];
-		
+		public int[,] game_array;//[16][30];
+
 		// same thing as main array only smaller for the next block display
-		//public int next_block_array[5][3];
-		
+		public int[,] next_block_array;//[5][3];
+
 		// self explanatory
 		public int score, level;
 		public int next_block;
-		
+
 		// Is this in ms?
 		// block drop timer
 		public uint tmr_value;
 		public bool quit, new_level, done_down_all;
+
+		Random rnd;
+
+		public TetEngine()
+		{
+			init();
+		}
+
+		void init()
+		{
+			X_MAX = 15; Y_MAX = 29;
+
+			rnd = new Random();
+
+			game_field = new int[width, height];
+			current_block_field = new int[width, height];
+			game_array = new int[width, height];
+			next_block_array = new int[nb_width, nb_height];
+
+			// zero game fields
+			int i = 0, j = 0;
+			while(j <= Y_MAX)
+			{
+				while(i <= X_MAX)
+				{
+					game_field[i, j] = 0;
+					i++;
+				}
+				i = 0;
+				j++;
+			}
+			i = 0; j = 0;
+			while(j <= Y_MAX)
+			{
+				while(i <= X_MAX)
+				{
+					if(current_block_field[i, j] != 0)
+						current_block_field[i, j] = 0;
+					i++;
+				}
+				i = 0;
+				j++;
+			}
+
+			// get first and second blocks
+			newb.type = rnd.Next(1, 7);
+			cb.type = newb.type;
+			newb.type = rnd.Next(1, 7);
+			cb.x = 7;
+			cb.y = 1;
+			cb.rot = 1;
+			sp = find_square_pos(cb);
+			current_block_field[sp.x1, sp.y1] = cb.type;
+			current_block_field[sp.x2, sp.y2] = cb.type;
+			current_block_field[sp.x3, sp.y3] = cb.type;
+			current_block_field[sp.x4, sp.y4] = cb.type;
+
+			update_next_block();
+
+			// init other stuff
+			level = 0;
+			score = 0;
+			tmr_value = 600;
+			next_level = 10;
+			quit = false;
+			new_level = false;
+			done_down_all = false;
+		}
+
+		public void update_next_block()
+		{
+
+		}
+
+		public void update_game_array()
+		{
+
+		}
+
+		public void fill_rows(int rows, int density)
+		{
+
+		}
+
+		public bool collision(BlockData nb)
+		{
+			return false;
+		}
+
+		public SquarePos find_square_pos(BlockData b)
+		{
+			// -y is up
+			// -x is left
+			SquarePos BlockI = new SquarePos();
+			// L block
+			if(b.type == 1)
+			{
+				// * * *
+				// *
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
+				}
+				// * *
+				//   *
+				//   *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 2;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
+				}
+				//	 *
+				// * * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x - 2; BlockI.y4 = b.y;
+				}
+				// *
+				// *
+				// * *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x; BlockI.y4 = b.y + 2;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 2)
+			{
+				// * * *
+				//	 *
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x - 2; BlockI.y4 = b.y;
+				}
+				//   *
+				//   *
+				// * *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x; BlockI.y3 = b.y + 2;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
+				}
+				// *
+				// * * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
+				}
+				// * *
+				// *
+				// *  
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x; BlockI.y4 = b.y - 2;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 3)
+			{
+				// * * * *
+				//
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x + 1; BlockI.y2 = b.y;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
+				}
+				//   *
+				//   *
+				//   *
+				//   *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 2;
+					BlockI.x4 = b.x; BlockI.y4 = b.y + 1;
+				}
+				// * * * *
+				//
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x + 1; BlockI.y2 = b.y;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
+				}
+				//   * 
+				//   *
+				//   *
+				//   *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 2;
+					BlockI.x4 = b.x; BlockI.y4 = b.y + 1;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 4)
+			{
+				// * *
+				// * *
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+				// * *
+				// * *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+				// * *
+				// * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+				// * *
+				// * *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 5)
+			{
+				// * * *
+				//   *
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+				//   *
+				// * *
+				//   *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
+				}
+				//   *
+				// * * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
+				}
+				// *
+				// * *
+				// *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x; BlockI.y4 = b.y + 1;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 6)
+			{
+				// * *
+				//   * *
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y + 1;
+				}
+				//   *
+				// * *
+				// *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x - 1; BlockI.y2 = b.y;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
+				}
+				// * *
+				//   * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y + 1;
+				}
+				//   *
+				// * *
+				// *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x - 1; BlockI.y2 = b.y;
+					BlockI.x3 = b.x; BlockI.y3 = b.y - 1;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
+				}
+			}
+			// -y is up
+			// -x is left
+			else if(b.type == 7)
+			{
+				//   * *
+				// * * 
+				if(b.rot == 1)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
+				}
+				// *
+				// * *
+				//   *
+				else if(b.rot == 2)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y + 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+				//   * *
+				// * *
+				else if(b.rot == 3)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y + 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
+					BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
+				}
+				// *
+				// * *
+				//   *
+				else if(b.rot == 4)
+				{
+					BlockI.x1 = b.x; BlockI.y1 = b.y;
+					BlockI.x2 = b.x; BlockI.y2 = b.y - 1;
+					BlockI.x3 = b.x + 1; BlockI.y3 = b.y + 1;
+					BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
+				}
+			}
+			return BlockI;
+		}
 	}
 }
 /*
-tet_engine::tet_engine()
-{
-	init();
-}
 
-void tet_engine::init()
-{
-	X_MAX = 15; Y_MAX = 29;
-	
-	// zero game fields
-	int i = 0, j = 0;
-	while(j <= Y_MAX)
-	{
-		while(i <= X_MAX)
-		{
-			game_field[i][j] = 0;
-			i++;
-		}
-		i = 0;
-		j++;
-	}
-	i = 0; j = 0;
-	while(j <= Y_MAX)
-	{
-		while(i <= X_MAX)
-		{
-			if(current_block_field[i][j] != 0)
-				current_block_field[i][j] = 0;
-			i++;
-		}
-		i = 0;
-		j++;
-	}
-	
-	// get first and second blocks
-	srand(time(nullptr));
-	newb.type = get_rand(7);
-	cb.type = newb.type;
-	newb.type = get_rand(7);
-	cb.x = 7;
-	cb.y = 1;
-	cb.rot = 1;
-	sp = find_square_pos(cb);
-	current_block_field[sp.x1][sp.y1] = cb.type;
-	current_block_field[sp.x2][sp.y2] = cb.type;
-	current_block_field[sp.x3][sp.y3] = cb.type;
-	current_block_field[sp.x4][sp.y4] = cb.type;
-	
-	update_next_block();
-
-	// init other stuff
-	level = 0;
-	score = 0;
-	tmr_value = 600;
-	next_level = 10;
-	quit = false;
-	new_level = false;
-	done_down_all = false;
-}
-
-int tet_engine::get_rand(int size)
-{
-	int n;
-	n = (rand())/(RAND_MAX / size) + 1;
-	// make sure (1 <= n <= size)
-	if (n > size)
-		n = size;
-	else if (n < 1)
-		n = 1;
-	return n;
-}
 
 void tet_engine::update_next_block()
 {
@@ -598,316 +931,3 @@ void tet_engine::check_full_row(void)
 */
 //------------------------------------------------------------------------------
 
-/******************
- * Find Squares' 
- * Positions
- ******************/
-/*
-square_pos tet_engine::find_square_pos(block_data b)
-{
-	// -y is up
-	// -x is left
-	square_pos BlockI;
-	// L block
-	if (b.type == 1)
-	{
-		// * * *
-		// *
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
-		}
-		// * *
-		//   *
-		//   *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 2;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
-		}
-		//	 *
-		// * * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x - 2; BlockI.y4 = b.y;
-		}
-		// *
-		// *
-		// * *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x;	 BlockI.y4 = b.y + 2;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 2)
-	{
-		// * * *
-		//	 *
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x - 2; BlockI.y4 = b.y;
-		}
-		//   *
-		//   *
-		// * *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y + 2;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
-		}
-		// *
-		// * * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
-		}
-		// * *
-		// *
-		// *  
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x;	 BlockI.y4 = b.y - 2;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 3)
-	{
-		// * * * *
-		//
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x + 1; BlockI.y2 = b.y;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
-		}
-		//   *
-		//   *
-		//   *
-		//   *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 2;
-			BlockI.x4 = b.x;	 BlockI.y4 = b.y + 1;
-		}
-		// * * * *
-		//
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x + 1; BlockI.y2 = b.y;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 2; BlockI.y4 = b.y;
-		}
-		//   * 
-		//   *
-		//   *
-		//   *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 2;
-			BlockI.x4 = b.x;	 BlockI.y4 = b.y + 1;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 4)
-	{
-		// * *
-		// * *
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-		// * *
-		// * *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-		// * *
-		// * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-		// * *
-		// * *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 5)
-	{
-		// * * *
-		//   *
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-		//   *
-		// * *
-		//   *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
-		}
-		//   *
-		// * * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y;
-		}
-		// *
-		// * *
-		// *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x;	 BlockI.y4 = b.y + 1;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 6)
-	{
-		// * *
-		//   * *
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y + 1;
-		}
-		//   *
-		// * *
-		// *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x - 1; BlockI.y2 = b.y;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
-		}
-		// * *
-		//   * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x - 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y + 1;
-		}
-		//   *
-		// * *
-		// *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x - 1; BlockI.y2 = b.y;
-			BlockI.x3 = b.x;	 BlockI.y3 = b.y - 1;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
-		}
-	}
-	// -y is up
-	// -x is left
-	else if (b.type == 7)
-	{
-		//   * *
-		// * * 
-		if (b.rot == 1)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
-		}
-		// *
-		// * *
-		//   *
-		else if (b.rot == 2)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y + 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-		//   * *
-		// * *
-		else if (b.rot == 3)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y + 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y;
-			BlockI.x4 = b.x - 1; BlockI.y4 = b.y + 1;
-		}
-		// *
-		// * *
-		//   *
-		else if (b.rot == 4)
-		{
-			BlockI.x1 = b.x;	 BlockI.y1 = b.y;
-			BlockI.x2 = b.x;	 BlockI.y2 = b.y - 1;
-			BlockI.x3 = b.x + 1; BlockI.y3 = b.y + 1;
-			BlockI.x4 = b.x + 1; BlockI.y4 = b.y;
-		}
-	}
-	return BlockI;
-}
-*/
