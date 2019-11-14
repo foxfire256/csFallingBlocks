@@ -11,7 +11,7 @@ using System;
 
 namespace csFallingBlocks
 {
-	class TetEngine
+	public class TetEngine
 	{
 		// private classes for current block (cb) and new block (newb)
 		BlockData cb, newb;
@@ -102,6 +102,8 @@ namespace csFallingBlocks
 			}
 
 			// get first and second blocks
+			newb = new BlockData();
+			cb = new BlockData();
 			newb.type = rnd.Next(1, 7);
 			cb.type = newb.type;
 			newb.type = rnd.Next(1, 7);
@@ -262,7 +264,7 @@ namespace csFallingBlocks
 				return false;
 		}
 
-		void move_left()
+		public void move_left()
 		{
 			SquarePos sp, np;
 			BlockData nb; // next block position
@@ -289,7 +291,7 @@ namespace csFallingBlocks
 				cb = nb;
 			}
 		}
-		void move_right()
+		public void move_right()
 		{
 			SquarePos sp, np;
 			BlockData nb; // next block position
@@ -316,7 +318,7 @@ namespace csFallingBlocks
 				cb = nb;
 			}
 		}
-		void move_up()
+		public void move_up()
 		{
 			SquarePos sp, np;
 			BlockData nb; // next block position
@@ -343,7 +345,7 @@ namespace csFallingBlocks
 				cb = nb;
 			}
 		}
-		void move_rot()
+		public void move_rot()
 		{
 			//
 			SquarePos sp, np;
@@ -377,7 +379,7 @@ namespace csFallingBlocks
 
 		// moves the current block all the way down
 		// don't call if done_down_all is true!
-		void full_down()
+		public void full_down()
 		{
 			if(!done_down_all)
 				while(!move_down()) ;
@@ -385,7 +387,7 @@ namespace csFallingBlocks
 			done_down_all = true;
 		}
 
-		bool move_down()
+		public bool move_down()
 		{
 			//
 			SquarePos sp, np;
@@ -418,7 +420,7 @@ namespace csFallingBlocks
 			}
 		}
 
-		void new_block()
+		public void new_block()
 		{
 			// move the current block to the game_field array
 			SquarePos sp;

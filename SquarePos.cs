@@ -3,7 +3,7 @@ namespace csFallingBlocks
 /**
  * hold the positions of the four squares that make up any block
  */
-	class SquarePos
+	public class SquarePos
 	{
 		public int x1;
 		public int y1;

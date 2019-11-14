@@ -13,7 +13,11 @@ namespace csFallingBlocks
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+
+			TetEngine te = new TetEngine();
+			MainForm mf = new MainForm(te);
+
+			Application.Run(mf);
 		}
 	}
 }
