@@ -18,16 +18,19 @@ namespace csFallingBlocks
 			squareSize = 16;
 			timer1.Interval = (int)(1.0 / 60.0 * 1000);
 			timer1.Start();
+
+			te.update_game_array();
 		}
 
 		private void MainForm_Paint(object sender, PaintEventArgs e)
 		{
 			int w, h;
-			w = squareSize / 2;
-			h = squareSize / 2;
+			w = squareSize;
+			h = squareSize;
 
 			int x, y;
 
+			// draw the game array
 			x = 0;
 			for(y = 0; y != (te.Y_MAX + 1);)
 			{
@@ -56,6 +59,7 @@ namespace csFallingBlocks
 			w = squareSize;
 			h = squareSize;
 
+			// draw the next block array
 			while(j < 3)
 			{
 				// fill in squares
@@ -179,6 +183,8 @@ namespace csFallingBlocks
 			else if(e.KeyCode == Keys.Down)
 			{
 				te.move_down();
+				te.update_game_array();
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.Up)
 			{
