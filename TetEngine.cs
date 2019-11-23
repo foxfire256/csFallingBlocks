@@ -267,9 +267,13 @@ namespace csFallingBlocks
 		public void move_left()
 		{
 			SquarePos sp, np;
-			BlockData nb; // next block position
-			nb = cb;
+			// next block position
+			BlockData nb = new BlockData();
+
+			nb.type = cb.type;
 			nb.x = cb.x - 1;
+			nb.y = cb.y;
+			nb.rot = cb.rot;
 
 			if(collision(nb))
 				return;
@@ -294,9 +298,13 @@ namespace csFallingBlocks
 		public void move_right()
 		{
 			SquarePos sp, np;
-			BlockData nb; // next block position
-			nb = cb;
+			// next block position
+			BlockData nb = new BlockData();
+
+			nb.type = cb.type;
 			nb.x = cb.x + 1;
+			nb.y = cb.y;
+			nb.rot = cb.rot;
 
 			if(collision(nb))
 				return;
@@ -321,9 +329,13 @@ namespace csFallingBlocks
 		public void move_up()
 		{
 			SquarePos sp, np;
-			BlockData nb; // next block position
-			nb = cb;
+			// next block position
+			BlockData nb = new BlockData();
+
+			nb.type = cb.type;
+			nb.x = cb.x;
 			nb.y = cb.y - 1;
+			nb.rot = cb.rot;
 
 			if(collision(nb))
 				return;
@@ -347,10 +359,13 @@ namespace csFallingBlocks
 		}
 		public void move_rot()
 		{
-			//
 			SquarePos sp, np;
-			BlockData nb; // next block position
-			nb = cb;
+			// next block position
+			BlockData nb = new BlockData();
+
+			nb.type = cb.type;
+			nb.x = cb.x;
+			nb.y = cb.y;
 			if(cb.rot < 4)
 				nb.rot = cb.rot + 1;
 			else if(cb.rot == 4)
@@ -389,11 +404,14 @@ namespace csFallingBlocks
 
 		public bool move_down()
 		{
-			//
 			SquarePos sp, np;
-			BlockData nb; // next block position
-			nb = cb;
+			// next block position
+			BlockData nb = new BlockData();
+			
+			nb.type = cb.type;
+			nb.x = cb.x;
 			nb.y = cb.y + 1;
+			nb.rot = cb.rot;
 
 			if(collision(nb))
 			{

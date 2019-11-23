@@ -184,19 +184,21 @@ namespace csFallingBlocks
 			{
 				te.move_down();
 				te.update_game_array();
-				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.Up)
 			{
 				te.move_rot();
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.Left)
 			{
 				te.move_left();
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.Right)
 			{
 				te.move_right();
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.Space)
 			{
@@ -209,26 +211,32 @@ namespace csFallingBlocks
 			else if(e.KeyCode == Keys.D1)
 			{
 				te.fill_rows(1, 5);
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.D2)
 			{
 				te.fill_rows(2, 5);
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.D3)
 			{
 				te.fill_rows(3, 5);
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.D4)
 			{
 				te.fill_rows(4, 5);
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.D5)
 			{
 				te.fill_rows(5, 5);
+				te.update_game_array();
 			}
 			else if(e.KeyCode == Keys.D6)
 			{
 				te.fill_rows(6, 5);
+				te.update_game_array();
 			}
 		}
 
