@@ -9,6 +9,8 @@ namespace csFallingBlocks
 	{
 		private int squareSize;
 		TetEngine te;
+		int score;
+		int level;
 
 		public MainForm(TetEngine te)
 		{
@@ -16,6 +18,53 @@ namespace csFallingBlocks
 			InitializeComponent();
 
 			squareSize = 16;
+
+			Font f = label1.Font;
+			Font fn = new Font(f.FontFamily, squareSize, f.Style);
+			label1.Font = fn;
+			label2.Font = fn;
+			label3.Font = fn;
+
+			Rectangle screenRectangle = RectangleToScreen(this.ClientRectangle);
+			int titleHeight = screenRectangle.Top - this.Top;
+
+			int win_w = (int)((te.X_MAX + 1) * 2 * squareSize);
+			// this weird mess for the height was determined experimentally
+			int win_h = (int)((te.Y_MAX + 1.5) * squareSize + titleHeight);
+
+			this.Width = win_w;
+			this.Height = win_h;
+
+			int x = (int)((te.X_MAX + 1) * 1.5 * squareSize - label1.Width / 2);
+			int y = (int)((te.Y_MAX + 1.5) * squareSize * 0.25 - label1.Height / 2);
+
+			label1.Left = x;
+			label1.Top = y;
+
+			score = te.score;
+
+			label2.Text = "Score: " + score;
+
+			x = (int)((te.X_MAX + 1) * 1.5 * squareSize - label2.Width / 2);
+			y = (int)((te.Y_MAX + 1.5) * squareSize * 0.75 - label2.Height / 2);
+			
+			label2.Left = x;
+			label2.Top = y;
+
+			level = te.level;
+
+			label3.Text = "Level: " + level;
+
+			x = (int)((te.X_MAX + 1) * 1.5 * squareSize - label3.Width / 2);
+			y = label2.Bottom + label3.Height;
+
+			label3.Left = x;
+			label3.Top = y;
+
+			label1.ForeColor = Color.FromArgb(255, 0, 255, 0);
+			label2.ForeColor = Color.FromArgb(255, 0, 255, 0);
+			label3.ForeColor = Color.FromArgb(255, 0, 255, 0);
+
 			timer1.Interval = (int)(1.0 / 60.0 * 1000);
 			timer1.Start();
 
@@ -51,7 +100,10 @@ namespace csFallingBlocks
 				}
 			}
 
-			x = 320; y = 160;
+			//x = 320; y = 160;
+			x = (int)((te.X_MAX - 1) * 1.5 * squareSize);
+			// this weird mess for the height was determined experimentally
+			y = (int)((te.Y_MAX) * squareSize / 2);
 			int i = 0, j = 0;
 
 			//fnt->printf_xy(renderer, 320, 140, "Next Block");
@@ -76,6 +128,26 @@ namespace csFallingBlocks
 				}
 				i = 0;
 				++j;
+			}
+
+			Pen greenPen = new Pen(Color.FromArgb(255, 0, 255, 0));
+			greenPen.Width = 3;
+			x = (int)((te.X_MAX + 1) * squareSize) + 1;
+			e.Graphics.DrawLine(greenPen, x, 0, x, (int)((te.Y_MAX + 1.5) * squareSize));
+			greenPen.Dispose();
+
+			if(te.score != score)
+			{
+				score = te.score;
+
+				label2.Text = "Score: " + score;
+			}
+
+			if(te.level != level)
+			{
+				level = te.level;
+
+				label3.Text = "Level: " + level;
 			}
 		}
 
