@@ -33,6 +33,7 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
+			this.timer2 = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// timer1
@@ -69,6 +70,10 @@
 			this.label3.TabIndex = 2;
 			this.label3.Text = "Level: 0";
 			// 
+			// timer2
+			// 
+			this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -98,6 +103,7 @@
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Timer timer2;
 	}
 }
 

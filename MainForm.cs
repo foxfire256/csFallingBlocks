@@ -11,6 +11,7 @@ namespace csFallingBlocks
 		TetEngine te;
 		int score;
 		int level;
+		uint downTimerTime;
 
 		public MainForm(TetEngine te)
 		{
@@ -67,6 +68,10 @@ namespace csFallingBlocks
 
 			timer1.Interval = (int)(1.0 / 60.0 * 1000);
 			timer1.Start();
+
+			downTimerTime = te.tmr_value;
+			timer2.Interval = (int)downTimerTime;
+			timer2.Start();
 
 			te.update_game_array();
 		}
@@ -148,6 +153,12 @@ namespace csFallingBlocks
 				level = te.level;
 
 				label3.Text = "Level: " + level;
+			}
+
+			if(downTimerTime != te.tmr_value)
+			{
+				downTimerTime = te.tmr_value;
+				timer2.Interval = (int)downTimerTime;
 			}
 		}
 
@@ -315,6 +326,12 @@ namespace csFallingBlocks
 		private void timer1_Tick(object sender, EventArgs e)
 		{
 			this.Invalidate();
+		}
+
+		private void timer2_Tick(object sender, EventArgs e)
+		{
+			te.move_down();
+			te.update_game_array();
 		}
 	}
 }
