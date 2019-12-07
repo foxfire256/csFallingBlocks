@@ -56,16 +56,11 @@ namespace csFallingBlocks
 		// Is this in ms?
 		// block drop timer
 		public uint tmr_value;
-		public bool quit, new_level, done_down_all;
+		public bool quit, new_level;
 
 		Random rnd;
 
 		public TetEngine()
-		{
-			init();
-		}
-
-		void init()
 		{
 			X_MAX = 15; Y_MAX = 29;
 
@@ -76,6 +71,11 @@ namespace csFallingBlocks
 			game_array = new int[width, height];
 			next_block_array = new int[nb_width, nb_height];
 
+			init();
+		}
+
+		public void init()
+		{
 			// zero game fields
 			int i = 0, j = 0;
 			while(j <= Y_MAX)
@@ -125,7 +125,6 @@ namespace csFallingBlocks
 			next_level = 10;
 			quit = false;
 			new_level = false;
-			done_down_all = false;
 		}
 
 		public void update_next_block()
@@ -390,16 +389,6 @@ namespace csFallingBlocks
 
 				cb = nb;
 			}
-		}
-
-		// moves the current block all the way down
-		// don't call if done_down_all is true!
-		public void full_down()
-		{
-			if(!done_down_all)
-				while(!move_down()) ;
-			{ }
-			done_down_all = true;
 		}
 
 		public bool move_down()

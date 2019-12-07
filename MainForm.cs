@@ -12,6 +12,8 @@ namespace csFallingBlocks
 		int score;
 		int level;
 		uint downTimerTime;
+		bool paused;
+		bool done;
 
 		public MainForm(TetEngine te)
 		{
@@ -19,12 +21,16 @@ namespace csFallingBlocks
 			InitializeComponent();
 
 			squareSize = 16;
+			paused = false;
+			done = false;
 
 			Font f = label1.Font;
 			Font fn = new Font(f.FontFamily, squareSize, f.Style);
 			label1.Font = fn;
 			label2.Font = fn;
 			label3.Font = fn;
+			label4.Font = fn;
+			label4.Visible = false;
 
 			Rectangle screenRectangle = RectangleToScreen(this.ClientRectangle);
 			int titleHeight = screenRectangle.Top - this.Top;
@@ -160,6 +166,19 @@ namespace csFallingBlocks
 				downTimerTime = te.tmr_value;
 				timer2.Interval = (int)downTimerTime;
 			}
+
+			if(te.quit && !done)
+			{
+				done = true;
+				paused = true;
+
+				label4.Visible = true;
+				label4.Text = "Game Over! Play Again? [Y]es or [N]o";
+				x = (int)((te.X_MAX + 1) * 1.0 * squareSize - label4.Width / 2);
+				y = (int)((te.Y_MAX + 1.5) * squareSize * 0.5 - label4.Height / 2);
+				label4.Left = x;
+				label4.Top = y;
+			}
 		}
 
 		private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
@@ -263,63 +282,99 @@ namespace csFallingBlocks
 			{
 				this.Close();
 			}
-			else if(e.KeyCode == Keys.Down)
+			else if (e.KeyCode == Keys.P)
 			{
-				te.move_down();
-				te.update_game_array();
+				if(!paused)
+				{
+					paused = true;
+					label4.Visible = true;
+					label4.Text = "Paused";
+					int x = (int)((te.X_MAX + 1) * 1.0 * squareSize - label4.Width / 2);
+					int y = (int)((te.Y_MAX + 1.5) * squareSize * 0.5 - label4.Height / 2);
+					label4.Left = x;
+					label4.Top = y;
+				}
+				else
+				{
+					paused = false;
+					label4.Visible = false;
+				}
 			}
-			else if(e.KeyCode == Keys.Up)
+			if(te.quit)
 			{
-				te.move_rot();
-				te.update_game_array();
+				if (e.KeyCode == Keys.Y)
+				{
+					te.quit = false;
+					te.init();
+					label4.Visible = false;
+					done = false;
+					paused = false;
+					downTimerTime = te.tmr_value;
+					timer2.Interval = (int)downTimerTime;
+				}
+				else if (e.KeyCode == Keys.N)
+				{
+					this.Close();
+				}
 			}
-			else if(e.KeyCode == Keys.Left)
+			if(!paused && !te.quit)
 			{
-				te.move_left();
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.Right)
-			{
-				te.move_right();
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.Space)
-			{
-				// down all
-			}
-			else if(e.KeyCode == Keys.P)
-			{
-				// this is pause
-			}
-			else if(e.KeyCode == Keys.D1)
-			{
-				te.fill_rows(1, 5);
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.D2)
-			{
-				te.fill_rows(2, 5);
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.D3)
-			{
-				te.fill_rows(3, 5);
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.D4)
-			{
-				te.fill_rows(4, 5);
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.D5)
-			{
-				te.fill_rows(5, 5);
-				te.update_game_array();
-			}
-			else if(e.KeyCode == Keys.D6)
-			{
-				te.fill_rows(6, 5);
-				te.update_game_array();
+				if (e.KeyCode == Keys.Down)
+				{
+					te.move_down();
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.Up)
+				{
+					te.move_rot();
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.Left)
+				{
+					te.move_left();
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.Right)
+				{
+					te.move_right();
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.Space)
+				{
+					// down all
+					while (!te.move_down()) { }
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D1)
+				{
+					te.fill_rows(1, 5);
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D2)
+				{
+					te.fill_rows(2, 5);
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D3)
+				{
+					te.fill_rows(3, 5);
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D4)
+				{
+					te.fill_rows(4, 5);
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D5)
+				{
+					te.fill_rows(5, 5);
+					te.update_game_array();
+				}
+				else if (e.KeyCode == Keys.D6)
+				{
+					te.fill_rows(6, 5);
+					te.update_game_array();
+				}
 			}
 		}
 
@@ -330,8 +385,11 @@ namespace csFallingBlocks
 
 		private void timer2_Tick(object sender, EventArgs e)
 		{
-			te.move_down();
-			te.update_game_array();
+			if(!paused)
+			{
+				te.move_down();
+				te.update_game_array();
+			}
 		}
 	}
 }
