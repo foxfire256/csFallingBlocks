@@ -15,12 +15,12 @@ namespace csFallingBlocks
 		bool paused;
 		bool done;
 
-		public MainForm(TetEngine te)
+		public MainForm(TetEngine te, int squareSize = 16)
 		{
 			this.te = te;
 			InitializeComponent();
 
-			squareSize = 16;
+			this.squareSize = squareSize;
 			paused = false;
 			done = false;
 
